@@ -14,7 +14,6 @@ st.write("A unified Decision Support System for cannibalization forecasting and 
 def load_data():
     df = pd.read_csv('market_data.csv')
     
-    # Force the date column back into a proper datetime object 
     if 'thnbln_dt' in df.columns:
         df['thnbln_dt'] = pd.to_datetime(df['thnbln_dt'])
         
@@ -29,13 +28,14 @@ st.divider()
 st.header("📉 Cannibalization Elasticity Calculator")
 st.write("Predict legacy product volume retention based on new technology adoption.")
 
-# Train Model 
-cutoff_date_calc = pd.to_datetime('2024-12-01')
-df_log = df_panel[df_panel['thnbln_dt'] >= cutoff_date_calc].copy()
+# Train Model on the ENTIRE dataset (Removed the date filter to fix the 0 prediction bug)
+df_log = df_panel.copy()
+df_log = df_log.fillna(0) # Fills any blank data that might break the math
 
 if df_log.empty:
-    st.error("Error: No data found after Dec 2024. Check your dataset dates.")
+    st.error("Error: No data found.")
 else:
+    # Add a small constant (+1) to avoid log(0) math errors
     df_log['ln_legacy'] = np.log1p(df_log['qty_acrysof_iq']) 
     df_log['ln_new_tech'] = np.log1p(df_log['qty_clareon']) 
     df_log['ln_total_hna'] = np.log1p(df_log['total_hna'])
@@ -67,12 +67,20 @@ else:
     # Predict and convert back from log scale
     ln_pred = calc_model.predict([[ln_new_input, ln_size_input]])[0]
     predicted_legacy = np.expm1(ln_pred)
+    
+    # Force the minimum to 0 so we don't get negative inventory
     predicted_legacy = max(0, predicted_legacy)
 
     # Display Results
     st.metric(label="Predicted Legacy Units Retained", value=round(predicted_legacy))
     st.info(f"**Insight:** The current Cannibalization Elasticity is {elasticity:.2f}. The market is highly inelastic, meaning we are retaining legacy volume effectively despite the new launch.")
-    st.caption(f"*(Developer View) Raw Log Output: {ln_pred:.4f} | Raw Unit Output: {predicted_legacy:.4f}*")
+    
+    # Debugging Output
+    with st.expander("🛠️ Developer Data Diagnostics"):
+        st.write(f"- Median Spend: {median_hna}")
+        st.write(f"- Model Intercept: {calc_model.intercept_:.4f}")
+        st.write(f"- Raw Log Output: {ln_pred:.4f}")
+        st.write(f"- Final Math output: {predicted_legacy:.4f}")
 
 
 # ==========================================
@@ -83,39 +91,40 @@ st.header("🎯 Defensive Sales Strategy & Lead Generation")
 st.write("These hospitals have NOT switched to the new technology yet, but our Random Forest model predicts a high probability of transition. Prioritize these accounts to prevent competitor takeover.")
 
 # Propensity Model Logic
+# Make sure your dataset actually has dates in 2025! If not, change this date to '2024-01-01'
 cutoff_date_ml = pd.to_datetime('2025-01-01')
 
-switched_2025 = df_panel[df_panel['thnbln_dt'] >= cutoff_date_ml].groupby('cust_name')['qty_clareon'].sum()
-target = (switched_2025 > 0).astype(int).reset_index()
-target.columns = ['cust_name', 'adopted_new_tech']
+# Only run if there is data past the cutoff date
+if not df_panel[df_panel['thnbln_dt'] >= cutoff_date_ml].empty:
+    switched_2025 = df_panel[df_panel['thnbln_dt'] >= cutoff_date_ml].groupby('cust_name')['qty_clareon'].sum()
+    target = (switched_2025 > 0).astype(int).reset_index()
+    target.columns = ['cust_name', 'adopted_new_tech']
 
-hist_data = df_panel[df_panel['thnbln_dt'] < cutoff_date_ml].copy()
-features = hist_data.groupby('cust_name').agg({
-    'qty_acrysof_iq': ['sum', 'mean'], 
-    'total_hna': ['sum'], 
-}).reset_index()
+    hist_data = df_panel[df_panel['thnbln_dt'] < cutoff_date_ml].copy()
+    features = hist_data.groupby('cust_name').agg({
+        'qty_acrysof_iq': ['sum', 'mean'], 
+        'total_hna': ['sum'], 
+    }).reset_index()
 
-# Flatten column names safely
-features.columns = ['cust_name', 'total_legacy', 'avg_legacy', 'total_spend']
-features = features.fillna(0)
+    features.columns = ['cust_name', 'total_legacy', 'avg_legacy', 'total_spend']
+    features = features.fillna(0)
 
-df_ml = features.merge(target, on='cust_name', how='inner')
-X_ml = df_ml.drop(['cust_name', 'adopted_new_tech'], axis=1)
-y_ml = df_ml['adopted_new_tech']
+    df_ml = features.merge(target, on='cust_name', how='inner')
+    X_ml = df_ml.drop(['cust_name', 'adopted_new_tech'], axis=1)
+    y_ml = df_ml['adopted_new_tech']
 
-if not X_ml.empty and len(y_ml.unique()) > 1:
-    # Train the Random Forest
-    rf_clf = RandomForestClassifier(n_estimators=100, random_state=42).fit(X_ml, y_ml)
-    df_ml['Switch Probability'] = rf_clf.predict_proba(X_ml)[:, 1]
-    
-    # Filter for accounts that haven't switched yet, sorted by highest risk
-    leads = df_ml[df_ml['adopted_new_tech'] == 0].sort_values(by='Switch Probability', ascending=False)
-    
-    # Display the Dataframe natively in Streamlit
-    st.dataframe(
-        leads[['cust_name', 'Switch Probability', 'total_legacy', 'total_spend']].head(15), 
-        use_container_width=True,
-        hide_index=True
-    )
+    if not X_ml.empty and len(y_ml.unique()) > 1:
+        rf_clf = RandomForestClassifier(n_estimators=100, random_state=42).fit(X_ml, y_ml)
+        df_ml['Switch Probability'] = rf_clf.predict_proba(X_ml)[:, 1]
+        
+        leads = df_ml[df_ml['adopted_new_tech'] == 0].sort_values(by='Switch Probability', ascending=False)
+        
+        st.dataframe(
+            leads[['cust_name', 'Switch Probability', 'total_legacy', 'total_spend']].head(15), 
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.warning("Not enough variance in the data to run the Random Forest model (e.g., no one has adopted yet, or everyone has).")
 else:
-    st.warning("Not enough variance in the data to run the Random Forest model (e.g., no one has adopted yet, or everyone has).")
+    st.warning("⚠️ Warning: No data found after January 1, 2025. The Machine Learning model needs future data to predict trends. Check your dataset dates.")
