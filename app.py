@@ -5,8 +5,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 
 # --- 1. APP CONFIGURATION ---
-st.set_page_config(page_title="Market Strategy Dashboard", layout="wide", page_icon="👁️")
-st.title("Product Transition & Market Strategy Dashboard")
+st.set_page_config(page_title="Market Strategy Dashboard", layout="wide")
+st.title("Product Launch & Market Strategy Dashboard")
 st.write("A unified Decision Support System for cannibalization forecasting and retention lead generation.")
 
 # --- 2. DATA CACHING ---
