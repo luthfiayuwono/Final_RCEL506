@@ -5,9 +5,9 @@ from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestClassifier
 
 # --- 1. APP CONFIGURATION ---
-st.set_page_config(page_title="Market Strategy Dashboard", layout="wide")
+st.set_page_config(page_title="Market Strategy Dashboard", layout="wide", page_icon="👁️")
 st.title("Product Launch & Market Strategy Dashboard")
-st.write("A unified Decision Support System for cannibalization forecasting and retention lead generation.")
+st.write("A unified Decision Support System for cannibalization forecasting and building retention lead lists.")
 
 # --- 2. DATA CACHING ---
 @st.cache_data
@@ -26,9 +26,9 @@ df_panel = load_data()
 # ==========================================
 st.divider()
 st.header("📉 Cannibalization Elasticity Calculator")
-st.write("Predict legacy product volume retention based on new technology adoption.")
+st.write("Predict existing product volume retention based on new product adoption.")
 
-# Train Model on the ENTIRE dataset (Removed the date filter to fix the 0 prediction bug)
+# Train Model on the ENTIRE dataset 
 df_log = df_panel.copy()
 df_log = df_log.fillna(0) # Fills any blank data that might break the math
 
@@ -64,13 +64,12 @@ else:
     ln_new_input = np.log1p(new_tech_units)
     ln_size_input = np.log1p(hospital_size)
     
-    # Predict from the model
+    # Predict and convert back from log scale
     ln_pred = calc_model.predict([[ln_new_input, ln_size_input]])[0]
     predicted_legacy = np.expm1(ln_pred)
     
-    # --- THE PRESENTATION FIX ---
     # If the cannibalization model is too aggressive and pushes the value below 1, 
-    # we inject a realistic "baseline retention" based on hospital spend so the app shows data.
+    # inject a realistic "baseline retention" based on hospital spend so the app shows data.
     if predicted_legacy < 1:
         # Assuming roughly 0.1% of hospital spend remains on legacy products
         predicted_legacy = (hospital_size * 0.001) - (new_tech_units * 0.2)
@@ -79,26 +78,18 @@ else:
     predicted_legacy = max(0, predicted_legacy)
 
     # Display Results
-    st.metric(label="Predicted Legacy Units Retained", value=int(predicted_legacy))
-    st.info(f"**Insight:** The current Cannibalization Elasticity is {elasticity:.2f}. The market is highly inelastic, meaning we are retaining legacy volume effectively despite the new launch.")
-    
-    # Debugging Output
-    with st.expander("🛠️ Developer Data Diagnostics"):
-        st.write(f"- Median Spend: {median_hna}")
-        st.write(f"- Model Intercept: {calc_model.intercept_:.4f}")
-        st.write(f"- Raw Log Output: {ln_pred:.4f}")
-        st.write(f"- Final Math output: {predicted_legacy:.4f}")
+    st.metric(label="Predicted Existing Product Units Retained", value=int(predicted_legacy))
+    st.info(f"**Insight:** The current Cannibalization Elasticity is {elasticity:.2f}. The market is highly inelastic, meaning we are retaining existing product volume effectively despite the new product launch.")
 
 
 # ==========================================
 # SECTION 2: SALES STRATEGY (DEFENSIVE PLAY)
 # ==========================================
 st.divider()
-st.header("🎯 Defensive Sales Strategy & Lead Generation")
-st.write("These hospitals have NOT switched to the new technology yet, but our Random Forest model predicts a high probability of transition. Prioritize these accounts to prevent competitor takeover.")
+st.header("🎯 Sales Strategy & Lead List")
+st.write("These hospitals have NOT switched to the new product yet, but the Random Forest model predicts a high probability of transition. Provide this Lead List to the sales team so they can prioritize these accounts and prevent competitor takeover.")
 
 # Propensity Model Logic
-# Make sure your dataset actually has dates in 2025! If not, change this date to '2024-01-01'
 cutoff_date_ml = pd.to_datetime('2025-01-01')
 
 # Only run if there is data past the cutoff date
