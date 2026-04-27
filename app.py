@@ -139,7 +139,9 @@ with tab1:
     st.markdown("---")
     st.subheader("Graph 3: Δ (Delta) Correlation Scatter Plot")
     df_scatter = df_panel.sort_values(['cust_name', 'thnbln'])
-    df_scatter['delta_acrysof'] = df_scatter.groupby('cust_name')['qty_acrysof_iq'].diff()
+    
+    # FIXED: Changed 'qty_acrysof_iq' to 'qty_acrysof'
+    df_scatter['delta_acrysof'] = df_scatter.groupby('cust_name')['qty_acrysof'].diff()
     df_scatter['delta_clareon'] = df_scatter.groupby('cust_name')['qty_clareon'].diff()
 
     df_plot = df_scatter.dropna().copy()
@@ -153,10 +155,14 @@ with tab1:
     ax3.set_ylabel('Change in AcrySof Units (Δ Legacy)', fontsize=10)
     ax3.axhline(0, color='black', linewidth=1.5, linestyle='--')
     ax3.axvline(0, color='black', linewidth=1.5, linestyle='--')
-    ax3.axvspan(0, df_plot['delta_clareon'].max() * 1.05, ymin=0, ymax=0.5, color='red', alpha=0.05)
     
-    ax3.text(df_plot['delta_clareon'].max() * 0.5, df_plot['delta_acrysof'].min() * 0.5,
-             'Cannibalization\nQuadrant', fontsize=12, color='red', weight='bold', ha='center', alpha=0.5)
+    # Optional safety check to prevent axvspan errors if max is 0
+    max_clareon = df_plot['delta_clareon'].max()
+    if pd.notna(max_clareon) and max_clareon > 0:
+        ax3.axvspan(0, max_clareon * 1.05, ymin=0, ymax=0.5, color='red', alpha=0.05)
+        ax3.text(max_clareon * 0.5, df_plot['delta_acrysof'].min() * 0.5,
+                 'Cannibalization\nQuadrant', fontsize=12, color='red', weight='bold', ha='center', alpha=0.5)
+        
     ax3.legend(loc='upper right', frameon=True)
     ax3.grid(True, linestyle=':', alpha=0.6)
     st.pyplot(fig3)
