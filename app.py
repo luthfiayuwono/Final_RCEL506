@@ -135,6 +135,24 @@ with tab1:
         df_bar_pct.plot(kind='bar', stacked=True, color=['Grey', '#007bff'], ax=ax2)
         ax2.yaxis.set_major_formatter(mtick.PercentFormatter())
         st.pyplot(fig2)
+    
+    st.markdown("---")
+    st.subheader("Graph 3: Delta Correlation (Cannibalization Check)")
+    
+    df_panel = df_panel.sort_values(['cust_name', 'thnbln'])
+    df_panel['d_acrysof'] = df_panel.groupby('cust_name')['qty_acrysof'].diff()
+    df_panel['d_clareon'] = df_panel.groupby('cust_name')['qty_clareon'].diff()
+    df_plot = df_panel.dropna()
+
+    fig3, ax3 = plt.subplots(figsize=(10, 4))
+    ax3.scatter(df_plot['d_clareon'], df_plot['d_acrysof'], alpha=0.5, color='Blue', label='Hospitals')
+    ax3.axhline(0, color='black', lw=1); ax3.axvline(0, color='black', lw=1)
+    
+    # Midterm Fix: Adding the Quadrant Shading & Legend
+    ax3.fill_between([0, df_plot['d_clareon'].max()], [0, 0], [df_plot['d_acrysof'].min(), df_plot['d_acrysof'].min()], color='red', alpha=0.1, label='Cannibalization Zone')
+    ax3.set_xlabel("Δ Clareon"); ax3.set_ylabel("Δ AcrySof")
+    ax3.legend()
+    st.pyplot(fig3)
 
 with tab2:
     st.header("🧮 'What-If' Cannibalization Simulator")
