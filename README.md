@@ -41,7 +41,7 @@ ___
 ## Technical Execution
 To replicate this environment, install the following dependencies:
 ```text
-pip install pandas numpy matplotlib scikit-learn statsmodels requests
+pip install -r requirements.txt
 
 ## Repository Structure
 
