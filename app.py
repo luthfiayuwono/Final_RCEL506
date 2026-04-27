@@ -12,7 +12,13 @@ from sklearn.ensemble import RandomForestClassifier
 # 1. PAGE CONFIGURATION
 # ==========================================
 st.set_page_config(page_title="Clareon Analytics Suite", page_icon="👁️‍🗨️", layout="wide")
-st.title("👁️‍🗨️ Clareon Launch Analytics: Strategic Decision Suite")
+st.title("New Product Launch Analytics: Strategic Decision Dashboard")
+st.markdown("""
+**Product Key:**
+* **Clareon:** New product launch
+* **AcrySof:** Existing legacy product
+""")
+
 st.markdown("---")
 
 # ==========================================
