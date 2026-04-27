@@ -3,7 +3,7 @@
 ## 📊 Executive Summary
 **The Business Problem:** Following the launch of the new Clareon product line, the business faced two critical strategic questions: Is Clareon cannibalizing our legacy AcrySof volume (Threat of Substitution), and how do we efficiently target the 102 stagnant hospitals that have yet to adopt the new technology (Bargaining Power of Buyers)? 
 
-**The Solution:** This project replaces theoretical business frameworks with an automated, end-to-end data science pipeline. The suite utilizes diagnostic econometrics to mathematically prove that the new product launch is expanding market share rather than cannibalizing legacy sales. It then deploys a robust Machine Learning propensity model (Random Forest) to predict future adopters, outperforming a naive baseline by guaranteeing high precision. Finally, it translates these predictive probabilities into a prescriptive, routed "Hit List" for the sales team, maximizing operational efficiency.
+**The Solution:** This project replaces theoretical business frameworks with an automated, end-to-end data science pipeline. The suite utilizes diagnostic econometrics to mathematically prove that the new product launch is expanding market share rather than cannibalizing legacy sales. It then deploys a robust Machine Learning propensity model (Random Forest) to predict future adopters, outperforming a naive baseline by guaranteeing high precision. Finally, it translates these predictive probabilities into a prescriptive, routed Lead List for the sales team, maximizing operational efficiency.
 
 ---
 
