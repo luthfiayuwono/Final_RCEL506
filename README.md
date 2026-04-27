@@ -1,22 +1,31 @@
-# 🚀 Clareon Launch Analytics Suite: Market Expansion & Lead Prediction Pipeline
+#  New Product Launch: Predictive Propensity & Cannibalization Analysis
+Executive Lead: Luthfia Yuwono
 
-## Executive Summary
-**The Business Problem:** Following the launch of the new Clareon product line, the business faced two critical strategic questions: Is Clareon cannibalizing our legacy AcrySof volume (Threat of Substitution), and how do we efficiently target the 102 stagnant hospitals that have yet to adopt the new technology (Bargaining Power of Buyers)? 
+**Project Objective:**
+To drive the commercial transition from AcrySof (Legacy) to Clareon (New Launch) by identifying high-probability hospital targets and quantifying product cannibalization.
 
-**The Solution:** This project replaces theoretical business frameworks with an automated, end-to-end data science pipeline. The suite utilizes diagnostic econometrics to mathematically prove that the new product launch is expanding market share rather than cannibalizing legacy sales. It then deploys a robust Machine Learning propensity model (Random Forest) to predict future adopters, outperforming a naive baseline by guaranteeing high precision. Finally, it translates these predictive probabilities into a prescriptive, routed Lead List for the sales team, maximizing operational efficiency.
+**The Business Problem:**
+The launch of a new medical device often faces two risks:
+1. Sales Inertia: High-volume legacy accounts remaining stagnant.
+2. Cannibalization: New product sales merely replacing legacy sales without increasing total hospital spend.
+This project provides a data-driven roadmap to identify which accounts are most likely to switch and provides a Lead List of 102 stagnant accounts for the sales team to prioritize.
 
----
-
-## The Analytics Methodology
+**Data Science Approach:**
 ![Analytics Pipeline Diagram](https://www.jirav.com/hs-fs/hubfs/Gartner%20Analytics.jpg?width=690&name=Gartner%20Analytics.jpg)
-This pipeline takes stakeholders through the complete analytics maturity curve:
+Moving beyond high-level business frameworks, this pipeline implements:
+1. Descriptive Analytics: Categorizes hospitals based on pre- and post-launch purchasing behavior.
+2. Diagnostic Analytics: A fixed-effects OLS regression to calculate cross-volume elasticity.
+3. Predictive Analytics: A Random Forest Classifier compared against a Naive Baseline (Dummy Classifier) to prove statistical superiority.
+4. Prescriptive Analytics: A probability-weighted lead scoring system for sales routing.
 
-1. **Descriptive Analytics (Financial Segmentation):** Categorizes hospitals into actionable cohorts (Stagnant, Cannibalizer, New Market, True Growth) based on pre- and post-launch purchasing behavior.
-2. **Diagnostic Analytics (Econometrics & Cannibalization):** Utilizes a `statsmodels` Fixed-Effects OLS Regression with clustered standard errors to isolate the cross-volume elasticity between Clareon and AcrySof. 
-   * *Business Insight:* The model returned a coefficient of -0.05 with a p-value of 0.514, proving zero statistically significant cannibalization.
-3. **Predictive Analytics (Propensity Modeling):** Deploys a Random Forest Classifier to identify hospitals highly likely to switch to Clareon.
-   * *Model Superiority:* The model is explicitly evaluated against a `DummyClassifier` (Naive Baseline). While the baseline achieves moderate accuracy due to class imbalance by guessing "No Switch" for everyone, the optimized Random Forest sacrifices baseline recall for high Precision, ensuring sales reps do not waste time on false positives.
-4. **Prescriptive Analytics (Strategic Lead Routing):** Applies deterministic business logic to the ML probabilities, filtering for minimum historical volume (>=10 units) and assigning categorical sales actions (e.g., "Immediate Priority Call") to generate a final top-10 hit list.
+___
+
+## Model Performance Highlights
+1. The Baseline: The naive model achieved moderate accuracy by guessing "No Switch," but provided 0% Recall for actual leads.
+2. The Optimized Model: Our Random Forest identifies switchers with high precision, ensuring sales resources are not wasted on false positives.
+3. The Result: Regression analysis yielded an elasticity of -0.05 (p=0.514), proving that New Product (Clareon) is currently expanding the market footprint rather than cannibalizing legacy volume.
+
+___
 
 ## O.W.L.E.T.-AI Performance Audit
 This project was developed with the assistance of O.W.L.E.T.-AI. To ensure engineering integrity, a strict governance framework was applied.
@@ -25,12 +34,17 @@ Reliability: 60% of AI tasks were approved; 31% required Strategic Redirection d
 
 Strategic Redirection Example: The AI initially suggested a basic OLS regression. I overruled this in favor of a Random Forest approach to capture non-linear relationships in financial behavior that OLS would have missed.
 
-As part of the engineering requirements, the performance of **O.W.L.E.T.-AI** was audited to ensure methodological rigour. 
-* **View the Performance Report:** [OWLET_AI_Performance-13.pdf](./OWLET_AI_Performance-13.pdf)
+**View the Performance Report:** [OWLET_AI_Performance-13.pdf](./OWLET_AI_Performance-13.pdf)
 
----
+___
 
-## 📂 Repository Structure
+## Technical Execution
+To replicate this environment, install the following dependencies:
+
+Bash
+pip install pandas numpy matplotlib scikit-learn statsmodels requests
+
+## Repository Structure
 
 ```text
 ├── 📄 main_pipeline.ipynb          # The sanitized, executable Jupyter Notebook
