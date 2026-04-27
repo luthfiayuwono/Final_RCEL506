@@ -40,14 +40,16 @@ ___
 
 ## Technical Execution
 To replicate this environment, install the following dependencies:
-
-Bash
+```text
 pip install pandas numpy matplotlib scikit-learn statsmodels requests
 
 ## Repository Structure
 
 ```text
-├── 📄 main_pipeline.ipynb          # The sanitized, executable Jupyter Notebook
-├── 📄 OWLET_AI_Performance.pdf     # One-page evaluation of AI Junior Assistant
-├── 📄 requirements.txt             # Python dependencies required to run the code
-└── 📄 README.md                    # Executive summary and replication instructions
+├── 📁 .devcontainer/           # Configuration for consistent development environments
+├── 📄 Final_Project.ipynb      # The sanitized, end-to-end predictive pipeline (EDA to ML)
+├── 📄 OWLET_AI_Performance.pdf # Professional 1-page PDF: AI Junior Assistant Evaluation
+├── 📄 OWLET_AI_Performance.py  # Python script used to generate the performance metrics/PDF
+├── 📄 README.md                # Executive summary and professional project handover
+├── 📄 app.py                   # Deployment script for live model interaction
+└── 📄 requirements.txt         # List of dependencies (fpdf, matplotlib, sklearn, etc.)
