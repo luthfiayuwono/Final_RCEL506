@@ -42,8 +42,7 @@ ___
 To replicate this environment, install the following dependencies:
 ```text
 pip install -r requirements.txt
-
-
+```
 
 ## Repository Structure
 
@@ -55,3 +54,5 @@ pip install -r requirements.txt
 ├── 📄 README.md                # Executive summary and professional project handover
 ├── 📄 app.py                   # Deployment script for live model interaction
 └── 📄 requirements.txt         # List of dependencies (fpdf, matplotlib, sklearn, etc.)
+```
+
