@@ -34,7 +34,7 @@ Reliability: 60% of AI tasks were approved; 31% required Strategic Redirection d
 
 Strategic Redirection Example: The AI initially suggested a basic OLS regression. I overruled this in favor of a Random Forest approach to capture non-linear relationships in financial behavior that OLS would have missed.
 
-**View the Performance Report:** [OWLET_AI_Performance-13.pdf](./OWLET_AI_Performance-13.pdf)
+**View the Performance Report:** [OWLET_AI_Performance-13.pdf](./OWLET_AI_Performance.pdf)
 
 ___
 
