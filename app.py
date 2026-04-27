@@ -192,6 +192,14 @@ with tab3:
     st.header("🎯 Lead Action Plan")
     st.write("Targeting actual stagnant hospitals using our Random Forest algorithm.")
     
+    # Added clear description for the users
+    st.info("""
+    **📊 Legacy Volume Tier Definitions:**
+    * **High Volume:** Bought **50+ units** of AcrySof historically. (Top priority targets)
+    * **Medium Volume:** Bought **20–49 units** of AcrySof historically.
+    * **Low Volume:** Bought **fewer than 20 units** of AcrySof historically.
+    """)
+    
     # DYNAMIC LEAD LIST CREATION (100% Real Data)
     
     # 1. Get the actual date each hospital last bought the legacy product
@@ -208,17 +216,17 @@ with tab3:
     
     # 4. Dynamically assign tiers based on their ACTUAL historic volume
     def assign_tier(vol):
-        if vol >= 50: return "Gold"
-        elif vol >= 20: return "Silver"
-        else: return "Bronze"
+        if vol >= 50: return "High Volume"
+        elif vol >= 20: return "Medium Volume"
+        else: return "Low Volume"
     
-    leads['Legacy Tier'] = leads['total_legacy'].apply(assign_tier)
+    leads['Legacy Volume Tier'] = leads['total_legacy'].apply(assign_tier)
     
     # 5. Sort by Highest Probability to Switch
     leads = leads.sort_values(by='switch_probability', ascending=False)
     
     # 6. Format the Final Table
-    final_table = leads[['cust_name', 'cust_city', 'switch_probability', 'Legacy Tier', 'Last Legacy Purchase']]
+    final_table = leads[['cust_name', 'cust_city', 'switch_probability', 'Legacy Volume Tier', 'Last Legacy Purchase']]
     final_table = final_table.rename(columns={'cust_name': 'Hospital Name', 'cust_city': 'Market/City'})
 
     # INTERACTIVE TABLE (Real Data + Progress Bars)
