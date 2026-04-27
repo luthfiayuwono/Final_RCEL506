@@ -137,21 +137,28 @@ with tab1:
         st.pyplot(fig2)
     
     st.markdown("---")
-    st.subheader("Graph 3: Delta Correlation (Cannibalization Check)")
-    
-    df_panel = df_panel.sort_values(['cust_name', 'thnbln'])
-    df_panel['d_acrysof'] = df_panel.groupby('cust_name')['qty_acrysof'].diff()
-    df_panel['d_clareon'] = df_panel.groupby('cust_name')['qty_clareon'].diff()
-    df_plot = df_panel.dropna()
+    st.subheader("Graph 3: Δ (Delta) Correlation Scatter Plot")
+    df_scatter = df_panel.sort_values(['cust_name', 'thnbln'])
+    df_scatter['delta_acrysof'] = df_scatter.groupby('cust_name')['qty_acrysof_iq'].diff()
+    df_scatter['delta_clareon'] = df_scatter.groupby('cust_name')['qty_clareon'].diff()
 
-    fig3, ax3 = plt.subplots(figsize=(10, 4))
-    ax3.scatter(df_plot['d_clareon'], df_plot['d_acrysof'], alpha=0.5, color='Blue', label='Hospitals')
-    ax3.axhline(0, color='black', lw=1); ax3.axvline(0, color='black', lw=1)
+    df_plot = df_scatter.dropna().copy()
+    df_plot = df_plot[(df_plot['delta_clareon'] > 0) | (df_plot['delta_clareon'] < 0)]
+
+    fig3, ax3 = plt.subplots(figsize=(10, 5))
+    ax3.scatter(df_plot['delta_clareon'], df_plot['delta_acrysof'],
+                alpha=0.6, color='blue', edgecolor='white', s=80, label='Hospitals')
+
+    ax3.set_xlabel('Change in Clareon Units (Δ New Launch)', fontsize=10)
+    ax3.set_ylabel('Change in AcrySof Units (Δ Legacy)', fontsize=10)
+    ax3.axhline(0, color='black', linewidth=1.5, linestyle='--')
+    ax3.axvline(0, color='black', linewidth=1.5, linestyle='--')
+    ax3.axvspan(0, df_plot['delta_clareon'].max() * 1.05, ymin=0, ymax=0.5, color='red', alpha=0.05)
     
-    # Midterm Fix: Adding the Quadrant Shading & Legend
-    ax3.fill_between([0, df_plot['d_clareon'].max()], [0, 0], [df_plot['d_acrysof'].min(), df_plot['d_acrysof'].min()], color='red', alpha=0.1, label='Cannibalization Zone')
-    ax3.set_xlabel("Δ Clareon"); ax3.set_ylabel("Δ AcrySof")
-    ax3.legend()
+    ax3.text(df_plot['delta_clareon'].max() * 0.5, df_plot['delta_acrysof'].min() * 0.5,
+             'Cannibalization\nQuadrant', fontsize=12, color='red', weight='bold', ha='center', alpha=0.5)
+    ax3.legend(loc='upper right', frameon=True)
+    ax3.grid(True, linestyle=':', alpha=0.6)
     st.pyplot(fig3)
 
 with tab2:
